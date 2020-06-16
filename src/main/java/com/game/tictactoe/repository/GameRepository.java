@@ -1,12 +1,13 @@
 package com.game.tictactoe.repository;
 
 import com.game.tictactoe.model.Game;
-import com.game.tictactoe.model.Player;
 
 import java.util.List;
 
 public interface GameRepository {
-    List<Game> findAllGames();
+    List<Game> findAvailableGames();
 
-    Game createGame(Player player);
+    Game createGame(String player1, String tag);
+
+    Game findPlayer1Game(String playerOne);
 }

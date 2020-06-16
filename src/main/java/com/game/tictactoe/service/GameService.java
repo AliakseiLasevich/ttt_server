@@ -1,14 +1,14 @@
 package com.game.tictactoe.service;
 
 import com.game.tictactoe.model.Game;
-import com.game.tictactoe.model.Player;
+import org.springframework.messaging.Message;
 
 import java.util.List;
 
 public interface GameService {
-    List<Game> findAllGames();
+    List<Game> findAvailableGames();
 
-    Game createGame(Player player);
+    Game createGame(Message message);
 
-    void joinGame(Player player);
+    Game findPlayer1Game(Message message);
 }
