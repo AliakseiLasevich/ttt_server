@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Game {
+    private long id;
     private String tag;
-    private String playerOneSession;
-    private String playerTwoSession;
+    private String playerOne;
+    private String playerTwo;
     private boolean open;
 
-    public Game(String playerOneSession, String tag) {
-        this.playerOneSession = playerOneSession;
+    public Game(long id, String playerOne, String tag) {
+        this.id = id;
+        this.playerOne = playerOne;
         this.tag = tag;
-
+        this.open = true;
     }
 }

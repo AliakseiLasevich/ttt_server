@@ -10,5 +10,7 @@ public interface GameService {
 
     Game createGame(Message message);
 
-    Game findPlayer1Game(Message message);
+    Game findPlayerOneGame(Message message);
+
+    void joinGame(Message msg, String playerTwo);
 }

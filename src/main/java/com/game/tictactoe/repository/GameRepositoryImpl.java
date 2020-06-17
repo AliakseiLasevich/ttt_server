@@ -10,33 +10,31 @@ import java.util.stream.Collectors;
 
 @Repository
 public class GameRepositoryImpl implements GameRepository {
+
+    private long id = 0;
     private List<Game> games = new ArrayList<>();
 
     @Override
     public List<Game> findAvailableGames() {
-//        for (int i = 0; i < 5; i++) {
-//            Game game = new Game();
-//            game.setTag("game #" + i);
-//            games.add(game);
-//        }
-
         return games.stream()
-                .filter(game -> game.getPlayerTwoSession() == null)
+                .filter(Game::isOpen)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Game createGame(String player1, String tag) {
-        Game game = new Game(player1, tag);
+        Game game = new Game(++id, player1, tag);
         games.add(game);
         return game;
     }
 
     @Override
-    public Game findPlayer1Game(String playerOneSession) {
-         return  games.stream()
-                 .filter(game -> game.getPlayerOneSession().equals(playerOneSession))
-                 .reduce((u, v) -> { throw new IllegalStateException("More than one ID found");})
-                 .get();
+    public Game findPlayerOneGame(String playerOneSession) {
+        return games.stream()
+                .filter(game -> game.getPlayerOne().equals(playerOneSession))
+                .reduce((u, v) -> {
+                    throw new IllegalStateException("More than one ID found");
+                })
+                .get();
     }
 }
