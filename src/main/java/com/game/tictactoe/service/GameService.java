@@ -8,9 +8,9 @@ import java.util.List;
 public interface GameService {
     List<Game> findAvailableGames();
 
-    Game createGame(Message message);
+    Game createGame(String playerOne, Message message);
 
     Game findPlayerOneGame(Message message);
 
-    void joinGame(Message msg, String playerTwo);
+    Game joinGame(Message msg, String playerTwo);
 }

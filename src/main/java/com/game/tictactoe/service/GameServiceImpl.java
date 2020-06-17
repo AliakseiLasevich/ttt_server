@@ -22,8 +22,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game createGame(Message message) {
-        String playerOne = (String) message.getHeaders().get("simpSessionId");
+    public Game createGame(String playerOne, Message message) {
         log.info("new game. player one:" + playerOne);
         String payload = new String((byte[]) message.getPayload());
         String tag = payload.substring(1, payload.length() - 1);
@@ -38,13 +37,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void joinGame(Message msg, String playerTwo) {
+    public Game joinGame(Message msg, String playerTwo) {
         String payload = new String((byte[]) msg.getPayload());
         String playerOne = payload.substring(1, payload.length() - 1);
         Game game = gameRepository.findPlayerOneGame(playerOne);
         game.setPlayerTwo(playerTwo);
         game.setOpen(false);
-        log.info("Game begins. Player one: "+playerOne+", playerTwo: "+playerTwo);
-
+        log.info("Game begins. Player one: " + playerOne + ", playerTwo: " + playerTwo);
+        return game;
     }
 }
