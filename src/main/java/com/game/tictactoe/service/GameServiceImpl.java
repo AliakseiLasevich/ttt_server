@@ -41,7 +41,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public MoveResponseDto move(MoveDto moveDto) {
         Game currentGame = findGameById(moveDto.getGameId());
+        int[] cells = currentGame.getCells();
+        cells[moveDto.getMove()] = moveDto.getMoveEquivalent();
+        String winner = findWinner(cells, moveDto.getUserId(), moveDto.getOpponentId());
 
+        System.out.println(winner);
         return null;
     }
 
@@ -49,4 +53,30 @@ public class GameServiceImpl implements GameService {
         return gameRepository.findGameById(gameId);
     }
 
+
+    private String findWinner(int[] cells, final String playerOne, final String playerTwo) {
+        if (cells[0] + cells[1] + cells[2] == 30 ||
+                cells[3] + cells[4] + cells[5] == 30 ||
+                cells[6] + cells[7] + cells[8] == 30 ||
+                cells[0] + cells[3] + cells[6] == 30 ||
+                cells[1] + cells[4] + cells[7] == 30 ||
+                cells[2] + cells[5] + cells[8] == 30 ||
+                cells[0] + cells[4] + cells[8] == 30 ||
+                cells[2] + cells[4] + cells[6] == 30) {
+            return playerOne;
+        }
+
+        if (cells[0] + cells[1] + cells[2] == 3 ||
+                cells[3] + cells[4] + cells[5] == 3 ||
+                cells[6] + cells[7] + cells[8] == 3 ||
+                cells[0] + cells[3] + cells[6] == 3 ||
+                cells[1] + cells[4] + cells[7] == 3 ||
+                cells[2] + cells[5] + cells[8] == 3 ||
+                cells[0] + cells[4] + cells[8] == 3 ||
+                cells[2] + cells[4] + cells[6] == 3) {
+            return playerTwo;
+        }
+
+        return null;
+    }
 }

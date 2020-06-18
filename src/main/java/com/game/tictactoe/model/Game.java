@@ -13,7 +13,7 @@ public class Game {
     private String playerTwo;
     private boolean open;
     private String winner;
-    private String[] cells;
+    private int[] cells = new int[9];
 
     public Game(long id, String playerOne, String tag) {
         this.id = id;
