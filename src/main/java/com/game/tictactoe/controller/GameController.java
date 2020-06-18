@@ -1,5 +1,6 @@
 package com.game.tictactoe.controller;
 
+import com.game.tictactoe.dto.MoveDto;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,14 @@ public class GameController {
         return gameService.createGame(principal.getName(), msg);
     }
 
+
+    @MessageMapping("/getSessionId")
+    @SendToUser("/queue/sessionId")
+    public String getSessionId(Principal principal) {
+        return principal.getName();
+    }
+
     @MessageMapping("/joinGame")
-    @SendToUser("/queue/game")
     public void joinGame(Principal principal,
                          SimpMessageHeaderAccessor sha,
                          @Payload Message msg) {
@@ -48,19 +55,23 @@ public class GameController {
         Game game = gameService.joinGame(msg, playerTwo);
         String playerOne = game.getPlayerOne();
 
+        //need to use queue for messaging to specific user
         simpMessagingTemplate.convertAndSendToUser(
-                playerOne, "/user/queue/", "opponent id: "+playerTwo);
-        simpMessagingTemplate.convertAndSendToUser(
-                playerTwo, "/user/queue/", "opponent id: "+playerOne);
+                playerOne, "/queue/opponent", playerTwo);
 
+        simpMessagingTemplate.convertAndSendToUser(
+                playerTwo, "/queue/opponent", playerOne);
     }
 
-//
-//    @MessageMapping("/gameStart")
-//    //    @SendTo("/topic/createGame")
-//    public String gameStartNotifier() {
-//        return "game starts";
-//    }
+
+    @MessageMapping("/move")
+    public  void move (MoveDto moveDto, Principal principal) {
+
+        simpMessagingTemplate.convertAndSendToUser(
+                moveDto.getUserId(), "/queue/move", "move user");
+        simpMessagingTemplate.convertAndSendToUser(
+                moveDto.getOpponentId(), "/queue/move", "move opponent");
 
 
+    }
 }

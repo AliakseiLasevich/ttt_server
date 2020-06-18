@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Game {
     private long id;
+    private String name;
     private String tag;
     private String playerOne;
     private String playerTwo;
     private boolean open;
+    private String winner;
+    private String[] cells;
 
     public Game(long id, String playerOne, String tag) {
         this.id = id;

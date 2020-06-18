@@ -46,4 +46,6 @@ public class GameServiceImpl implements GameService {
         log.info("Game begins. Player one: " + playerOne + ", playerTwo: " + playerTwo);
         return game;
     }
+
+
 }

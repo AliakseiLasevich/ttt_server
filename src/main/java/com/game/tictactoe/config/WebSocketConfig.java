@@ -25,15 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
         brokerRegistry.setApplicationDestinationPrefixes("/app");
-        brokerRegistry.enableSimpleBroker("/topic", "/queue", "/user");
-//        brokerRegistry.setUserDestinationPrefix("/secured/user"); // /secured/user/queue/game
+        brokerRegistry.enableSimpleBroker("/topic", "/queue");
     }
-
-    @EventListener
-    void handleSessionConnectedEvent(SessionConnectedEvent event) {
-        // Get Accessor
-        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
-    }
-
 
 }
