@@ -42,11 +42,9 @@ public class GameServiceImpl implements GameService {
     public MoveResponseDto move(MoveDto moveDto) {
         Game currentGame = findGameById(moveDto.getGameId());
         int[] cells = currentGame.getCells();
-        cells[moveDto.getMove()] = moveDto.getMoveEquivalent();
+        cells[moveDto.getCellId()] = moveDto.getMoveEquivalent();
         String winner = findWinner(cells, moveDto.getUserId(), moveDto.getOpponentId());
-
-        System.out.println(winner);
-        return null;
+        return new MoveResponseDto(winner, moveDto.getCellId(), moveDto.getUserId());
     }
 
     private Game findGameById(int gameId) {

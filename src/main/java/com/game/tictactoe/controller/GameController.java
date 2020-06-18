@@ -2,6 +2,7 @@ package com.game.tictactoe.controller;
 
 import com.game.tictactoe.dto.MoveDto;
 import com.game.tictactoe.dto.MoveResponseDto;
+import com.game.tictactoe.dto.WinnerDto;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,14 +66,23 @@ public class GameController {
 
     @MessageMapping("/move")
     public void move(MoveDto moveDto) {
-
         MoveResponseDto response = gameService.move(moveDto);
 
+//        simpMessagingTemplate.convertAndSendToUser(
+//                moveDto.getUserId(), "/queue/move", "move user");
         simpMessagingTemplate.convertAndSendToUser(
-                moveDto.getUserId(), "/queue/move", "move user");
-        simpMessagingTemplate.convertAndSendToUser(
-                moveDto.getOpponentId(), "/queue/move", "move opponent");
+                moveDto.getOpponentId(), "/queue/move", response);
 
 
+    }
+
+    @MessageMapping("/gameOver")
+    public void gameOver(Principal principal, WinnerDto winnerDto) {
+
+        simpMessagingTemplate.convertAndSendToUser(
+                principal.getName(), "/queue/gameOver", "You lose!");
+
+        simpMessagingTemplate.convertAndSendToUser(
+                winnerDto.getWinnerId(), "/queue/gameOver", "You win!");
     }
 }
