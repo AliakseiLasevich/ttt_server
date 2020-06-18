@@ -1,6 +1,7 @@
 package com.game.tictactoe.controller;
 
 import com.game.tictactoe.dto.MoveDto;
+import com.game.tictactoe.dto.MoveResponseDto;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +36,8 @@ public class GameController {
     @MessageMapping("/createGame")
     @SendTo("/topic/createGame")
     public Game createGame(Principal principal,
-                           @Payload Message msg) {
-        return gameService.createGame(principal.getName(), msg);
+                           @Payload String playerOne) {
+        return gameService.createGame(principal.getName(), playerOne);
     }
 
 
@@ -49,13 +49,12 @@ public class GameController {
 
     @MessageMapping("/joinGame")
     public void joinGame(Principal principal,
-                         SimpMessageHeaderAccessor sha,
-                         @Payload Message msg) {
+                         @Payload int gameId) {
         String playerTwo = principal.getName();
-        Game game = gameService.joinGame(msg, playerTwo);
+        Game game = gameService.joinGame(gameId, playerTwo);
         String playerOne = game.getPlayerOne();
 
-        //need to use queue for messaging to specific user
+//        need to use queue for messaging to specific user
         simpMessagingTemplate.convertAndSendToUser(
                 playerOne, "/queue/opponent", playerTwo);
 
@@ -65,7 +64,9 @@ public class GameController {
 
 
     @MessageMapping("/move")
-    public  void move (MoveDto moveDto, Principal principal) {
+    public void move(MoveDto moveDto) {
+
+        MoveResponseDto response = gameService.move(moveDto);
 
         simpMessagingTemplate.convertAndSendToUser(
                 moveDto.getUserId(), "/queue/move", "move user");

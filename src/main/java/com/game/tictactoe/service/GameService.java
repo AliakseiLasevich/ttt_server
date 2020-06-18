@@ -1,16 +1,19 @@
 package com.game.tictactoe.service;
 
+import com.game.tictactoe.dto.MoveDto;
+import com.game.tictactoe.dto.MoveResponseDto;
 import com.game.tictactoe.model.Game;
-import org.springframework.messaging.Message;
 
 import java.util.List;
 
 public interface GameService {
     List<Game> findAvailableGames();
 
-    Game createGame(String playerOne, Message message);
+    Game createGame(String playerOne, String message);
 
-    Game findPlayerOneGame(Message message);
+    Game joinGame(int msg, String playerTwo);
 
-    Game joinGame(Message msg, String playerTwo);
+    MoveResponseDto move(MoveDto moveDto);
+
+
 }

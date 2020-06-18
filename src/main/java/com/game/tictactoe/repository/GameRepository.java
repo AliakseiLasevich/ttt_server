@@ -9,5 +9,5 @@ public interface GameRepository {
 
     Game createGame(String player1, String tag);
 
-    Game findPlayerOneGame(String playerOne);
+    Game findGameById(int gameId);
 }

@@ -1,10 +1,11 @@
 package com.game.tictactoe.service;
 
+import com.game.tictactoe.dto.MoveDto;
+import com.game.tictactoe.dto.MoveResponseDto;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.repository.GameRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,30 +23,30 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game createGame(String playerOne, Message message) {
+    public Game createGame(String playerOne, String tag) {
         log.info("new game. player one:" + playerOne);
-        String payload = new String((byte[]) message.getPayload());
-        String tag = payload.substring(1, payload.length() - 1);
         return gameRepository.createGame(playerOne, tag);
     }
 
 
     @Override
-    public Game findPlayerOneGame(Message message) {
-        String playerOne = (String) message.getHeaders().get("simpSessionId");
-        return gameRepository.findPlayerOneGame(playerOne);
-    }
-
-    @Override
-    public Game joinGame(Message msg, String playerTwo) {
-        String payload = new String((byte[]) msg.getPayload());
-        String playerOne = payload.substring(1, payload.length() - 1);
-        Game game = gameRepository.findPlayerOneGame(playerOne);
+    public Game joinGame(int gameId, String playerTwo) {
+        Game game = gameRepository.findGameById(gameId);
         game.setPlayerTwo(playerTwo);
         game.setOpen(false);
-        log.info("Game begins. Player one: " + playerOne + ", playerTwo: " + playerTwo);
+        log.info("Game begins. Player one: " + game.getPlayerOne() + ", playerTwo: " + game.getPlayerTwo());
         return game;
     }
 
+    @Override
+    public MoveResponseDto move(MoveDto moveDto) {
+        Game currentGame = findGameById(moveDto.getGameId());
+
+        return null;
+    }
+
+    private Game findGameById(int gameId) {
+        return gameRepository.findGameById(gameId);
+    }
 
 }

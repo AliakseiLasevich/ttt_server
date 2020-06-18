@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MoveDto {
+    private int gameId;
     private String userId;
     private String opponentId;
     private int move;

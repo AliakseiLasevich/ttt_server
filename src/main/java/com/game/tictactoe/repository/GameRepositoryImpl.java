@@ -23,18 +23,25 @@ public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public Game createGame(String player1, String tag) {
-        Game game = new Game(++id, player1, tag);
+        Game game = new Game(id++, player1, tag);
         games.add(game);
         return game;
     }
 
     @Override
-    public Game findPlayerOneGame(String playerOneSession) {
-        return games.stream()
-                .filter(game -> game.getPlayerOne().equals(playerOneSession))
-                .reduce((u, v) -> {
-                    throw new IllegalStateException("More than one ID found");
-                })
-                .get();
+    public Game findGameById(int gameId) {
+        return games.get(gameId);
     }
+
+
+//    public Game findPlayerOneGame(String playerOneSession) {
+////        return games.stream()
+////                .filter(game -> game.getPlayerOne().equals(playerOneSession))
+////                .reduce((u, v) -> {
+////                    throw new IllegalStateException("More than one ID found");
+////                })
+////                .get();
+////    }
+
+
 }
