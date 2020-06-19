@@ -26,8 +26,7 @@ public class GameController {
     @MessageMapping("/findGames")
     @SendTo("/topic/findGames")
     public List<Game> availableGames() {
-        List<Game> l = gameService.findAvailableGames();
-        return l;
+        return gameService.findAvailableGames();
     }
 
     @MessageMapping("/createGame")
@@ -49,6 +48,10 @@ public class GameController {
         String playerTwo = principal.getName();
         Game game = gameService.joinGame(gameId, playerTwo);
         String playerOne = game.getPlayerOne();
+        notifyOpponent(playerOne, playerTwo);
+    }
+
+    private void notifyOpponent(String playerOne, String playerTwo){
         simpMessagingTemplate.convertAndSendToUser(playerOne, "/queue/opponent", playerTwo);
         simpMessagingTemplate.convertAndSendToUser(playerTwo, "/queue/opponent", playerOne);
     }
@@ -57,20 +60,31 @@ public class GameController {
     @MessageMapping("/move")
     public void move(MoveDto moveDto) {
         ResponseDto response = gameService.move(moveDto);
-
         simpMessagingTemplate.convertAndSendToUser(
                 moveDto.getOpponentId(), "/queue/move", response);
+        pickMoveResponse(response, moveDto);
+    }
 
+    private void pickMoveResponse(ResponseDto response, MoveDto moveDto) {
         if (response instanceof WinnerDto) {
-            simpMessagingTemplate.convertAndSendToUser(moveDto.getUserId(), "/queue/gameOver", response);
-            simpMessagingTemplate.convertAndSendToUser(moveDto.getOpponentId(), "/queue/move", new MoveResponseDto(moveDto.getCellId(), moveDto.getOpponentId()));
-            simpMessagingTemplate.convertAndSendToUser(moveDto.getOpponentId(), "/queue/gameOver", response);
+            passGameOverMessage(moveDto.getUserId(), (WinnerDto) response);
+            passToOpponentMove(moveDto);
+            passGameOverMessage(moveDto.getOpponentId(), (WinnerDto) response);
         }
-
         if (response instanceof TieResponseDto) {
             simpMessagingTemplate.convertAndSendToUser(moveDto.getUserId(), "/queue/tie", response);
-            simpMessagingTemplate.convertAndSendToUser(moveDto.getOpponentId(), "/queue/move", new MoveResponseDto(moveDto.getCellId(), moveDto.getOpponentId()));
+            passToOpponentMove(moveDto);
             simpMessagingTemplate.convertAndSendToUser(moveDto.getOpponentId(), "/queue/tie", new TieResponseDto());
         }
     }
+
+    private void passToOpponentMove(MoveDto moveDto) {
+        simpMessagingTemplate.convertAndSendToUser(moveDto.getOpponentId(), "/queue/move", new MoveResponseDto(moveDto.getCellId(), moveDto.getOpponentId()));
+    }
+
+    private void passGameOverMessage(String userId, WinnerDto winnerDto) {
+        simpMessagingTemplate.convertAndSendToUser(userId, "/queue/gameOver", winnerDto);
+    }
+
+
 }

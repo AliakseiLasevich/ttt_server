@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,11 +40,28 @@ public class GameServiceImpl implements GameService {
         Game currentGame = findGameById(moveDto.getGameId());
         int[] cells = currentGame.getCells();
         cells[moveDto.getCellId()] = moveDto.getMoveEquivalent();
-
         boolean isWinner = findWinner(cells);
+        return pickMoveResponse(moveDto, isWinner, cells);
+    }
 
+    private Game findGameById(int gameId) {
+        return gameRepository.findGameById(gameId);
+    }
+
+
+    private boolean findWinner(int[] cells) {
+        return cells[0] == cells[1] && cells[1] == cells[2] && cells[1] != 0 ||
+                cells[3] == cells[4] && cells[4] == cells[5] && cells[4] != 0 ||
+                cells[6] == cells[7] && cells[7] == cells[8] && cells[7] != 0 ||
+                cells[0] == cells[3] && cells[3] == cells[6] && cells[3] != 0 ||
+                cells[1] == cells[4] && cells[4] == cells[7] && cells[4] != 0 ||
+                cells[2] == cells[5] && cells[5] == cells[8] && cells[5] != 0 ||
+                cells[0] == cells[4] && cells[4] == cells[8] && cells[4] != 0 ||
+                cells[2] == cells[4] && cells[4] == cells[6] && cells[4] != 0;
+    }
+
+    private ResponseDto pickMoveResponse(MoveDto moveDto, boolean isWinner, int[] cells) {
         ResponseDto response = null;
-
         if (isWinner) {
             response = new WinnerDto(moveDto.getUserId());
         }
@@ -55,26 +71,6 @@ public class GameServiceImpl implements GameService {
         if (Arrays.stream(cells).allMatch(cell -> cell != 0)) {
             response = new TieResponseDto("Tie!");
         }
-
         return response;
-    }
-
-    private Game findGameById(int gameId) {
-        return gameRepository.findGameById(gameId);
-    }
-
-
-    private boolean findWinner(int[] cells) {
-        if (cells[0] == cells[1] && cells[1] == cells[2] && cells[1] != 0 ||
-                cells[3] == cells[4] && cells[4] == cells[5] && cells[4] != 0 ||
-                cells[6] == cells[7] && cells[7] == cells[8] && cells[7] != 0 ||
-                cells[0] == cells[3] && cells[3] == cells[6] && cells[3] != 0 ||
-                cells[1] == cells[4] && cells[4] == cells[7] && cells[4] != 0 ||
-                cells[2] == cells[5] && cells[5] == cells[8] && cells[5] != 0 ||
-                cells[0] == cells[4] && cells[4] == cells[8] && cells[4] != 0 ||
-                cells[2] == cells[4] && cells[4] == cells[6] && cells[4] != 0) {
-            return true;
-        }
-        return false;
     }
 }
