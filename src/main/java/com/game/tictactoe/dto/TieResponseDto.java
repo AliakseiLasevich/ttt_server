@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WinnerDto implements ResponseDto {
-    private String winnerId;
+public class TieResponseDto implements ResponseDto {
+    private String result;
 }

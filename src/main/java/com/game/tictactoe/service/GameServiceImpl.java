@@ -1,13 +1,13 @@
 package com.game.tictactoe.service;
 
-import com.game.tictactoe.dto.MoveDto;
-import com.game.tictactoe.dto.MoveResponseDto;
+import com.game.tictactoe.dto.*;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.repository.GameRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -39,12 +39,26 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public MoveResponseDto move(MoveDto moveDto) {
+    public ResponseDto move(MoveDto moveDto) {
         Game currentGame = findGameById(moveDto.getGameId());
         int[] cells = currentGame.getCells();
         cells[moveDto.getCellId()] = moveDto.getMoveEquivalent();
         String winner = findWinner(cells, moveDto.getUserId(), moveDto.getOpponentId());
-        return new MoveResponseDto(winner, moveDto.getCellId(), moveDto.getUserId());
+
+        ResponseDto response = null;
+        if (winner != null) {
+            log.info("winner: " + winner);
+            response = new WinnerDto(winner);
+        } else if (winner == null) {
+            log.info("no winner yet");
+            response = new MoveResponseDto(moveDto.getCellId(), moveDto.getUserId());
+        }
+        if (Arrays.stream(cells).allMatch(cell -> cell != 0)) {
+            log.info("It's tie!");
+            response = new TieResponseDto("Tie!");
+        }
+
+        return response;
     }
 
     private Game findGameById(int gameId) {
@@ -77,4 +91,6 @@ public class GameServiceImpl implements GameService {
 
         return null;
     }
+
+
 }

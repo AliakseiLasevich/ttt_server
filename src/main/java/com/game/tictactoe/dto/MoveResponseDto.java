@@ -6,8 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class MoveResponseDto {
-    private String winnerId;
+public class MoveResponseDto implements ResponseDto {
     private int opponentCellId;
     private String opponentId;
 
