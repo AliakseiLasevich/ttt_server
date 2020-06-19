@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,17 +25,14 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(String playerOne, String gameName) {
-        log.info("new game. player one:" + playerOne);
         return gameRepository.createGame(playerOne, gameName);
     }
-
 
     @Override
     public Game joinGame(int gameId, String playerTwo) {
         Game game = gameRepository.findGameById(gameId);
         game.setPlayerTwo(playerTwo);
         game.setOpen(false);
-        log.info("Game begins. Player one: " + game.getPlayerOne() + ", playerTwo: " + game.getPlayerTwo());
         return game;
     }
 
@@ -43,18 +41,18 @@ public class GameServiceImpl implements GameService {
         Game currentGame = findGameById(moveDto.getGameId());
         int[] cells = currentGame.getCells();
         cells[moveDto.getCellId()] = moveDto.getMoveEquivalent();
-        String winner = findWinner(cells, moveDto.getUserId(), moveDto.getOpponentId());
+
+        boolean isWinner = findWinner(cells);
 
         ResponseDto response = null;
-        if (winner != null) {
-            log.info("winner: " + winner);
-            response = new WinnerDto(winner);
-        } else if (winner == null) {
-            log.info("no winner yet");
+
+        if (isWinner) {
+            response = new WinnerDto(moveDto.getUserId());
+        }
+        if (!isWinner) {
             response = new MoveResponseDto(moveDto.getCellId(), moveDto.getUserId());
         }
         if (Arrays.stream(cells).allMatch(cell -> cell != 0)) {
-            log.info("It's tie!");
             response = new TieResponseDto("Tie!");
         }
 
@@ -66,31 +64,17 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    private String findWinner(int[] cells, final String playerOne, final String playerTwo) {
-        if (cells[0] + cells[1] + cells[2] == 30 ||
-                cells[3] + cells[4] + cells[5] == 30 ||
-                cells[6] + cells[7] + cells[8] == 30 ||
-                cells[0] + cells[3] + cells[6] == 30 ||
-                cells[1] + cells[4] + cells[7] == 30 ||
-                cells[2] + cells[5] + cells[8] == 30 ||
-                cells[0] + cells[4] + cells[8] == 30 ||
-                cells[2] + cells[4] + cells[6] == 30) {
-            return playerOne;
+    private boolean findWinner(int[] cells) {
+        if (cells[0] == cells[1] && cells[1] == cells[2] && cells[1] != 0 ||
+                cells[3] == cells[4] && cells[4] == cells[5] && cells[4] != 0 ||
+                cells[6] == cells[7] && cells[7] == cells[8] && cells[7] != 0 ||
+                cells[0] == cells[3] && cells[3] == cells[6] && cells[3] != 0 ||
+                cells[1] == cells[4] && cells[4] == cells[7] && cells[4] != 0 ||
+                cells[2] == cells[5] && cells[5] == cells[8] && cells[5] != 0 ||
+                cells[0] == cells[4] && cells[4] == cells[8] && cells[4] != 0 ||
+                cells[2] == cells[4] && cells[4] == cells[6] && cells[4] != 0) {
+            return true;
         }
-
-        if (cells[0] + cells[1] + cells[2] == 3 ||
-                cells[3] + cells[4] + cells[5] == 3 ||
-                cells[6] + cells[7] + cells[8] == 3 ||
-                cells[0] + cells[3] + cells[6] == 3 ||
-                cells[1] + cells[4] + cells[7] == 3 ||
-                cells[2] + cells[5] + cells[8] == 3 ||
-                cells[0] + cells[4] + cells[8] == 3 ||
-                cells[2] + cells[4] + cells[6] == 3) {
-            return playerTwo;
-        }
-
-        return null;
+        return false;
     }
-
-
 }

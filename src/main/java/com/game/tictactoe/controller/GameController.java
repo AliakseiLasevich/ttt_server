@@ -4,8 +4,6 @@ import com.game.tictactoe.dto.*;
 import com.game.tictactoe.model.Game;
 import com.game.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -28,7 +26,7 @@ public class GameController {
     @MessageMapping("/findGames")
     @SendTo("/topic/findGames")
     public List<Game> availableGames() {
-        List<Game> l =  gameService.findAvailableGames();
+        List<Game> l = gameService.findAvailableGames();
         return l;
     }
 
@@ -59,6 +57,7 @@ public class GameController {
     @MessageMapping("/move")
     public void move(MoveDto moveDto) {
         ResponseDto response = gameService.move(moveDto);
+
         simpMessagingTemplate.convertAndSendToUser(
                 moveDto.getOpponentId(), "/queue/move", response);
 
