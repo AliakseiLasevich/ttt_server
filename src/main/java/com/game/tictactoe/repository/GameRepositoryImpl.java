@@ -24,8 +24,8 @@ public class GameRepositoryImpl implements GameRepository {
     }
 
     @Override
-    public Game createGame(String player1, String tag) {
-        Game game = new Game(id, player1, tag);
+    public Game createGame(String player1, String gameName) {
+        Game game = new Game(id, player1, gameName);
         id++;
         games.add(game);
         return game;

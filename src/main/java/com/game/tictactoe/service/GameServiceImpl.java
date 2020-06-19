@@ -23,9 +23,9 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game createGame(String playerOne, String tag) {
+    public Game createGame(String playerOne, String gameName) {
         log.info("new game. player one:" + playerOne);
-        return gameRepository.createGame(playerOne, tag);
+        return gameRepository.createGame(playerOne, gameName);
     }
 
 

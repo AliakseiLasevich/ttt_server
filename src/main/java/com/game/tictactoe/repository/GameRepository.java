@@ -7,7 +7,7 @@ import java.util.List;
 public interface GameRepository {
     List<Game> findAvailableGames();
 
-    Game createGame(String player1, String tag);
+    Game createGame(String player1, String gameName);
 
     Game findGameById(int gameId);
 }

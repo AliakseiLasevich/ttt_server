@@ -27,16 +27,16 @@ public class GameController {
 
     @MessageMapping("/findGames")
     @SendTo("/topic/findGames")
-    public List<Game> availableGames(@Payload Message msg,
-                                     @Header("simpSessionId") String sessionId) {
-        return gameService.findAvailableGames();
+    public List<Game> availableGames() {
+        List<Game> l =  gameService.findAvailableGames();
+        return l;
     }
 
     @MessageMapping("/createGame")
     @SendTo("/topic/createGame")
     public Game createGame(Principal principal,
-                           @Payload String playerOne) {
-        return gameService.createGame(principal.getName(), playerOne);
+                           @Payload String gameName) {
+        return gameService.createGame(principal.getName(), gameName);
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 public interface GameService {
     List<Game> findAvailableGames();
 
-    Game createGame(String playerOne, String message);
+    Game createGame(String playerOne, String gameName);
 
     Game joinGame(int msg, String playerTwo);
 
